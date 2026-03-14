@@ -1,0 +1,57 @@
+<!DOCTYPE html5>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Weather 5-Day</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="{% if forecast %}{{ forecast[0].status | lower }}{% else %}default-bg{% endif %}">
+
+    <div class="container">
+        
+        <div class="ai-badge">
+            <span class="pulse-dot"></span> Hybrid ML Engine Active
+        </div>
+
+        <h1 class="main-title">Weather AI</h1>
+        <p class="subtitle">Next-Gen Weather Forecast</p>
+
+        <form action="/predict" method="post" class="search-form">
+            <input type="text" name="city" value="{{ city }}" placeholder="Enter any city..." required autocomplete="off">
+            <button type="submit">Analyze 🔮</button>
+        </form>
+
+        {% if error %}
+        <div class="error-box">⚠️ {{ error }}</div>
+        {% endif %}
+
+        {% if forecast %}
+        <h3 class="city-title">📍 {{ city | title }}</h3>
+        
+        <div class="forecast-container">
+            {% for day in forecast %}
+            <div class="weather-card">
+                <div class="date">{{ day.date }}</div>
+                <div class="icon">{{ day.emoji }}</div>
+                <div class="temp">{{ day.temp }}°</div>
+                <div class="status">{{ day.status }}</div>
+                
+                <div class="risk-container">
+                    <div class="risk-label">Rain Risk: {{ day.rain_chance }}%</div>
+                    <div class="risk-bar-bg">
+                        <div class="risk-bar-fill" style="width: {{ day.rain_chance }}%;"></div>
+                    </div>
+                </div>
+                
+                <div class="desc">{{ day.desc }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Ignore the virtual environment
+env/
+venv/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore secret keys
+secrets.toml
+.env
+
+# Ignore large datasets (Optional, but recommended)
+dataset/
+*.csv
