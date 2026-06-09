@@ -1,4 +1,3 @@
-/* --- BASE SETUP --- */
 body {
     margin: 0;
     font-family: 'Outfit', sans-serif; /* Modern, round, friendly font */
@@ -11,7 +10,7 @@ body {
 }
 
 /* --- DYNAMIC WEATHER BACKGROUNDS --- */
-body.default-bg { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; }
+body.default-bg { background: linear-gradient(135deg, #7e8fac 0%, #325694 100%); color: white; }
 body.sunny { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #111; }
 body.hot, body.heatwave { background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); color: #111; }
 body.rain, body.thunderstorm { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; }

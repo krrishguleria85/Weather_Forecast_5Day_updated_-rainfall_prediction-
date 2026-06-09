@@ -17,11 +17,11 @@
         </div>
 
         <h1 class="main-title">Weather AI</h1>
-        <p class="subtitle">Next-Gen Weather Forecast</p>
+        <p class="subtitle">Next-Gen 5-Day Weather Forecast</p>
 
         <form action="/predict" method="post" class="search-form">
-            <input type="text" name="city" value="{{ city }}" placeholder="Enter any city..." required autocomplete="off">
-            <button type="submit">Analyze 🔮</button>
+            <input type="text" name="city" value="{{ city }}" placeholder="Enter any city (type state name if not found)" required autocomplete="off">
+            <button type="submit">Analyze</button>
         </form>
 
         {% if error %}
@@ -36,7 +36,8 @@
             <div class="weather-card">
                 <div class="date">{{ day.date }}</div>
                 <div class="icon">{{ day.emoji }}</div>
-                <div class="temp">{{ day.temp }}°</div>
+                <div class="temp" style="margin-bottom: 0px;">{{ day.high_temp }}°</div>
+                <div style="font-size: 14px; opacity: 0.8; margin-bottom: 10px; font-weight: 400;">Low: {{ day.low_temp }}°</div>
                 <div class="status">{{ day.status }}</div>
                 
                 <div class="risk-container">

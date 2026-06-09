@@ -80,7 +80,7 @@ X_train, X_test, y_train, y_test = train_test_split(X , y, test_size=0.2, random
 
 #-- STEP 5: Train the Model by random forest classifier ------
 print("🚀 Training the Random Forest Model Starts ")
-model = RandomForestClassifier(n_estimators=100, random_state= 42, n_jobs= -1)
+model = RandomForestClassifier(n_estimators=50, max_depth=10, min_samples_leaf=4, random_state= 42, n_jobs= -1)
 model.fit(X_train, y_train)
 print("\n")
 
@@ -89,7 +89,7 @@ print("\n")
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test,y_pred)
 print("------------------------------------------------")
-print(f"🎯 Model Accuracy: {accuracy * 100:.2f}%")
+print(f" Model Accuracy: {accuracy * 100:.2f}%")
 print("------------------------------------------------")
 print("Detailed Report:\n", classification_report(y_test, y_pred))
 print("\n")
