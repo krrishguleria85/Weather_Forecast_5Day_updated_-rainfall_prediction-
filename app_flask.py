@@ -6,8 +6,8 @@ from datetime import datetime
 import os
 
 
-API_KEY = "77b334c2dda8528f43217f7a408107bc"
-#API_KEY = os.environ.get("WEATHER_API_KEY")
+
+API_KEY = os.environ.get("WEATHER_API_KEY")
 
 
 app = Flask(__name__)
