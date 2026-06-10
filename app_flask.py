@@ -3,6 +3,7 @@ import joblib
 import requests
 import pandas as pd
 from datetime import datetime
+
 import os
 
 
@@ -176,7 +177,6 @@ def predict():
                 daily_data[date_key]['clouds'].append(item['clouds']['all'])
             
             
-            
             forecast_list=[]
             for date_key, metrics in list(daily_data.items())[:5]: #limit to 5 days
                 
@@ -231,7 +231,8 @@ def predict():
         
         else:
             return render_template('index.html', error="City Not Found!", city=user_input)
-    
+        
+        
                     
 if __name__ == '__main__':
     app.run(debug=True)
