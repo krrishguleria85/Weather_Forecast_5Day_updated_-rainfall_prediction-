@@ -8,7 +8,9 @@ import os
 
 
 
-API_KEY = os.environ.get("WEATHER_API_KEY")
+#API_KEY = os.environ.get("WEATHER_API_KEY")
+
+
 
 
 app = Flask(__name__)
@@ -16,6 +18,7 @@ app = Flask(__name__)
 # --- 1. LOAD THE TRAINED MODEL ---
 try:
     model= joblib.load('indian_weather_model.joblib')
+    city_encoder = joblib.load("city_encoded.joblib")
 except FileNotFoundError:
     print("Training File Not Found !!")
     exit()
@@ -165,8 +168,10 @@ def predict():
                         'feels_like': [],
                         'wind_speeds': [],
                         'humidities': [],
-                        'clouds': []
+                        'clouds': [],
+                        'wind_gusts' : []
                     }
+                    
                 # Collect values from all times of the day
                 daily_data[date_key]['temps'].append(item['main']['temp'])
                 daily_data[date_key]['min_temps'].append(item['main']['temp_min'])
@@ -175,10 +180,17 @@ def predict():
                 daily_data[date_key]['wind_speeds'].append(item['wind']['speed'])
                 daily_data[date_key]['humidities'].append(item['main']['humidity'])
                 daily_data[date_key]['clouds'].append(item['clouds']['all'])
+                daily_data[date_key]['wind_gusts'].append(item['wind'].get('gust', item['wind']['speed']))
             
             
             forecast_list=[]
-            for date_key, metrics in list(daily_data.items())[:5]: #limit to 5 days
+            for date_key, metrics in list(daily_data.items())[:5]:
+                forecast_date = datetime.strptime(
+                    date_key, "%Y-%m-%d"
+                )
+                month = forecast_date.month
+                day_of_year = forecast_date.timetuple().tm_yday
+                
                 
                 #cal. true day summaries across all time zomes
                 true_max = max(metrics['max_temps'])
@@ -189,14 +201,37 @@ def predict():
                 avg_clouds = sum(metrics['clouds']) / len(metrics['clouds'])
                 
                 #1. create a features dataframe for model
+                try:
+                    city_encoded = city_encoder.transform(
+                        [selected_loc['name']]
+                    )[0]
+                except Exception:
+                    city_encoded = 0
+                    
                 features={
-                    'MaxTemp':true_max,
-                    'MinTemp':true_min,
-                    'FeelsLike':avg_feels,
-                    'WindSpeed':avg_wind
+                    'cityEncoded': city_encoded,
+                    'Month': month, 
+                    'Dayofyear': day_of_year,
+                    
+                    
+                    'maxTemp':true_max,
+                    'minTemp':true_min,
+                    
+                    
+                    'FeelsLikeMax':avg_feels,
+                    'FeelsLikeMin': min(metrics['feels_like']),
+                    
+                    
+                    'WindSpeedMax': avg_wind,
+                    'WindGusts': max(metrics['wind_gusts'])
                 }
+                
                 df_input = pd.DataFrame([features])
+                df_input = df_input[[
+                    'cityEncoded','Month','Dayofyear','maxTemp','minTemp','FeelsLikeMax','FeelsLikeMin','WindSpeedMax','WindGusts']]
+                
                 prob = model.predict_proba(df_input)[0][1]
+                
                 conf_score = int(prob * 100)
                 
                 #2. run rule based logic
