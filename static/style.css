@@ -9,13 +9,15 @@ body {
     transition: background 1s ease-in-out; /* Smooth fade between weather changes */
 }
 
-/* --- DYNAMIC WEATHER BACKGROUNDS --- */
+
+/* Dynamic weather ui style */
 body.default-bg { background: linear-gradient(135deg, #7e8fac 0%, #325694 100%); color: white; }
 body.sunny { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #111; }
 body.hot, body.heatwave { background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); color: #111; }
 body.rain, body.thunderstorm { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; }
 body.snow, body.blizzard { background: linear-gradient(135deg, #8baaaa 0%, #ae8b9c 100%); color: #111; }
 body.cloudy, body.overcast, body.foggy { background: linear-gradient(135deg, #757f9a 0%, #d7dde8 100%); color: #111; }
+
 
 .container {
     text-align: center;
@@ -55,10 +57,14 @@ body.cloudy, body.overcast, body.foggy { background: linear-gradient(135deg, #75
     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
 }
 
+
+
+
 /* --- TYPOGRAPHY --- */
 .main-title { font-size: 42px; font-weight: 800; margin: 0 0 5px 0; letter-spacing: -1px; }
 .subtitle { opacity: 0.8; font-size: 16px; margin-bottom: 30px; }
 .city-title { margin-top: 30px; font-size: 28px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
 
 /* --- SEARCH BAR --- */
 .search-form { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
@@ -89,6 +95,10 @@ button {
 }
 button:hover { background: linear-gradient(135deg, #222, #444); transform: translateY(-2px); }
 
+
+
+
+
 /* --- PREMIUM GLASS CARDS --- */
 .forecast-container {
     display: flex;
@@ -98,6 +108,7 @@ button:hover { background: linear-gradient(135deg, #222, #444); transform: trans
     justify-content: center;
     flex-wrap: wrap;
 }
+
 .weather-card {
     background: rgba(255, 255, 255, 0.15); /* Frosted Glass */
     backdrop-filter: blur(20px) saturate(180%);
