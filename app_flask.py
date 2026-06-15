@@ -9,7 +9,7 @@ import os
 
 
 #API_KEY = os.environ.get("WEATHER_API_KEY")
-API_KEY = 'f9678a747bdf2a3b7dd1a7998f262959'
+API_KEY = ' '
 
 
 app = Flask(__name__)
