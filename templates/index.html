@@ -21,6 +21,9 @@
         <h1 class="main-title">Weather AI</h1>
         <p class="subtitle">Next-Gen 5-Day Weather Forecast</p>
 
+        <p class="ai-note"> AI-powered forecast based on historical weather patterns and live weather data </p>
+
+
         <form action="/predict" method="post" class="search-form">
             <input type="text" name="city" value="{{ city }}" placeholder="Enter any city (type state name if not found)" required autocomplete="off">
             <button type="submit">Analyze</button>
@@ -41,12 +44,9 @@
                 <div class="temp" style="margin-bottom: 0px;">{{ day.high_temp }}°</div>
                 <div style="font-size: 14px; opacity: 0.8; margin-bottom: 10px; font-weight: 400;">Low: {{ day.low_temp }}°</div>
                 <div class="status">{{ day.status }}</div>
-                <div class="confidence">🤖 ML Confidence: {{day.rain_chance}}% </div>
-
-
             
                 <div class="risk-container">
-                    <div class="risk-label">Rain Risk: {{ day.rain_chance }}%</div>
+                    <div class="risk-label">🤖 AI Rain Probability: {{ day.rain_chance }}%</div>
                     <div class="risk-bar-bg">
                         <div class="risk-bar-fill" style="width: {{ day.rain_chance }}%;"></div>
                     </div>
@@ -58,7 +58,6 @@
         </div>
         {% endif %}
     </div>
-
 
 </body>
 </html>

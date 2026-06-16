@@ -7,9 +7,7 @@ from datetime import datetime
 import os
 
 
-
-#API_KEY = os.environ.get("WEATHER_API_KEY")
-API_KEY = ' '
+API_KEY = '77b334c2dda8528f43217f7a408107bc'
 
 
 app = Flask(__name__)
@@ -49,7 +47,7 @@ def get_weather_type(conf_score, temp_min,temp_max, humidity, clouds, wind_speed
         if wind_speed >=18:
             desc += "Gusty Winds Possible."
             
-        return "🌧️","Rain",desc
+        return "🌧️","Rain Likely",desc
     
     #5. Chance of rain
     if 50 <= conf_score < 70 and clouds >= 40:
@@ -96,7 +94,7 @@ def predict():
         user_input = request.form['city']
         
         state_map = {
-            "hp": "himachal", "up": "uttar pradesh", "mp": "madhya pradesh", 
+            "hp": "himachal pradesh", "up": "uttar pradesh", "mp": "madhya pradesh", 
             "ap": "andhra pradesh", "cg": "chhattisgarh", "mh": "maharashtra", 
             "rj": "rajasthan", "gj": "gujarat", "tn": "tamil nadu", "kl": "kerala", 
             "ka": "karnataka", "wb": "west bengal", "ts": "telangana", "pb": "punjab", 
@@ -123,8 +121,9 @@ def predict():
             
         
         # STEP-> Highly Accurate Geocoding via api
-        geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={city_name}&count=20&language=en&format=json"
+        geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={city_name}&count=20&language=en&format=json&countryCode=IN"
         geo_response = requests.get(geo_url).json()
+
         
         if "results" not in geo_response or len(geo_response["results"]) == 0:
             return render_template('index.html', error="City geographic data not found. Try another search.", city=user_input)
@@ -132,7 +131,11 @@ def predict():
         
         # Look through the 5 results for the matching state
         selected_loc = geo_response["results"][0] # Default to the biggest one
-        
+        for loc in geo_response["results"]:
+            if loc.get("country", "").lower() == "india":
+                selected_loc = loc
+                break
+            
         if target_state:
             for loc in geo_response["results"]:
                 actual_state = loc.get("admin1", "").lower()
@@ -146,7 +149,11 @@ def predict():
         lon = selected_loc["longitude"]
         
         resolved_city_name = f"{selected_loc['name']}, {selected_loc.get('admin1', '')}"
-
+        #print("\n===== SELECTED LOCATION =====")
+        #print(selected_loc['name'])
+        #print(selected_loc.get('admin1'))
+        #print("LAT:", lat)
+        #print("LON:", lon)
 
         # Fetch Weather using Coordinates instead of Text ---
         url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
@@ -158,6 +165,7 @@ def predict():
             
             #to get weather at all time
             daily_data={}
+            
             for item in data['list']:
                 date_obj = datetime.strptime(item['dt_txt'], "%Y-%m-%d %H:%M:%S")
                 date_key = date_obj.strftime("%Y-%m-%d")
@@ -173,20 +181,33 @@ def predict():
                         'wind_speeds': [],
                         'humidities': [],
                         'clouds': [],
-                        'wind_gusts' : []
+                        'wind_gusts' : [],
+                        'pop_values': []
                     }
                     
                 # Collect values from all times of the day
                 daily_data[date_key]['temps'].append(item['main']['temp'])
                 daily_data[date_key]['min_temps'].append(item['main']['temp_min'])
                 daily_data[date_key]['max_temps'].append(item['main']['temp_max'])
+                
+                #print(
+                    #item['dt_txt'],
+                    #"TEMP_MAX:",
+                    #item['main']['temp_max']
+                #)
+                
                 daily_data[date_key]['feels_like'].append(item['main']['feels_like'])
                 daily_data[date_key]['wind_speeds'].append(item['wind']['speed'])
                 daily_data[date_key]['humidities'].append(item['main']['humidity'])
                 daily_data[date_key]['clouds'].append(item['clouds']['all'])
                 daily_data[date_key]['wind_gusts'].append(item['wind'].get('gust', item['wind']['speed']))
-            
-            
+                #
+                daily_data[date_key]['pop_values'].append(
+                    item.get('pop', 0) * 100
+                )
+             
+             
+                        
             forecast_list=[]
             for date_key, metrics in list(daily_data.items())[:5]:
                 forecast_date = datetime.strptime(
@@ -199,10 +220,27 @@ def predict():
                 #cal. true day summaries across all time zomes
                 true_max = max(metrics['max_temps'])
                 true_min = min(metrics['min_temps'])
+                
+                #print(
+                    #date_key,
+                    #"HIGH: ",
+                    #true_max,
+                    #"LOW:",
+                   # true_min
+                #)
+                
+                
                 avg_feels = sum(metrics['feels_like']) / len(metrics['feels_like'])
                 avg_wind = sum(metrics['wind_speeds']) / len(metrics['wind_speeds'])
                 avg_humidity = sum(metrics['humidities']) / len(metrics['humidities'])
                 avg_clouds = sum(metrics['clouds']) / len(metrics['clouds'])
+                #
+                avg_pop = (
+                    sum(metrics['pop_values']) / len(metrics['pop_values'])
+                )
+                
+                
+                wind_speed_max = max(metrics['wind_speeds'])
                 
                 #1. create a features dataframe for model
                 try:
@@ -226,8 +264,8 @@ def predict():
                     'FeelsLikeMin': min(metrics['feels_like']),
                     
                     
-                    'WindSpeedMax': avg_wind,
-                    'WindGusts': max(metrics['wind_gusts'])
+                    'WindSpeedMax': wind_speed_max,
+                    'WindGusts': max(metrics['wind_gusts']) 
                 }
                 
                 df_input = pd.DataFrame([features])
@@ -236,7 +274,12 @@ def predict():
                 
                 prob = model.predict_proba(df_input)[0][1]
                 
-                conf_score = int(prob * 100)
+                #conf_score = int(prob * 100)
+                ml_score = int(prob * 100)
+                conf_score = int(
+                    (ml_score * 0.7) + (avg_pop * 0.3)
+                )
+                    
                 
                 #2. run rule based logic
                 emoji, status, desc = get_weather_type(
@@ -249,8 +292,8 @@ def predict():
                 )
                 
                 #3. apply the clean ui rules
-                if status in ["Sunny", "Hot", "Heatwave"] and conf_score > 40:
-                    conf_score = 15
+                #if status in ["Sunny", "Hot", "Heatwave"] and conf_score > 40:
+                    #conf_score = 15
                 if conf_score<20:
                     conf_score=0
                     
