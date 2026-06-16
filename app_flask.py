@@ -207,7 +207,18 @@ def predict():
              
                         
             forecast_list=[]
-            for date_key, metrics in list(daily_data.items())[:5]:
+            
+            today = datetime.now().date()
+            
+            future_days = []
+            for date_key, metrics in daily_data.items():
+                forecast_date = datetime.strptime(
+                    date_key, "%Y-%m-%d"
+                ).date()
+                if forecast_date >= today:
+                    future_days.append((date_key, metrics))
+            
+            for date_key, metrics in list(daily_data.items())[1:6]:
                 forecast_date = datetime.strptime(
                     date_key, "%Y-%m-%d"
                 )
