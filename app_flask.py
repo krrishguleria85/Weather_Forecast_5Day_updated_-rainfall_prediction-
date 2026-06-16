@@ -27,14 +27,20 @@ def get_weather_type(conf_score, temp_min,temp_max, humidity, clouds, wind_speed
     #hybrid app as it combines ML model + physics logic to returs emoji, status, description
     
     #1. Snow region
-    if temp_min <=2 and conf_score >=50:
+    if temp_min <=2 and humidity >= 70 and conf_score >=50:
         return "❄️","Snow","Very cold conditions. Snowfall possible.."
     
-    # Thunderstorms (check before rain)
-    if conf_score >= 60 and humidity >= 70 and wind_speed >= 18:
+    
+    #2. Fog (North India winters)
+    if humidity >= 95 and wind_speed <= 7 and temp_min <= 18:
+        return "🌫️", "Foggy", "Low visibility. Drive carefully."
+
+
+    #3. Thunderstorms (check before rain)
+    if conf_score >= 60 and humidity >= 75 and clouds >= 70 and wind_speed >= 19:
         return "⛈️", "Thunderstorm", "Storms possible with lightning."
     
-    #2. Rain
+    #4. Rain
     if conf_score >=70 and clouds>=50:
         desc ="Rain Likely, carry an Umbrella ☂️"
         
@@ -45,7 +51,7 @@ def get_weather_type(conf_score, temp_min,temp_max, humidity, clouds, wind_speed
             
         return "🌧️","Rain",desc
     
-    # Chance of rain
+    #5. Chance of rain
     if 50 <= conf_score < 70 and clouds >= 40:
         
         # Desert override
@@ -54,27 +60,26 @@ def get_weather_type(conf_score, temp_min,temp_max, humidity, clouds, wind_speed
         
         return "🌦️", "Chance of Rain", "Rain possible later in the day."
     
-
-    # Fog (North India winters)
-    if humidity >= 95 and wind_speed <= 7 and temp_min <= 18:
-        return "🌫️", "Foggy", "Low visibility. Drive carefully."
-
-    # Heatwave (common in Rajasthan, Delhi, central India)
-    if temp_max >= 40:
+    #6. Heatwave
+    if temp_max >= 43:
         return "🔥", "Heatwave", "Extreme heat conditions."
 
-    # Hot weather
-    if temp_max >= 35:
+    #7. Hot weather
+    if 37 <= temp_max < 43:
         return "🌡️", "Hot", "Very warm day. Stay hydrated."
-
-    # Cloud conditions
+    
+    #8. windy conditons:
+    if wind_speed >= 30:
+        return "💨", "Windy", "Strong winds expected." 
+    
+    #9. Cloud conditions
     if clouds >= 80:
         return "☁️", "Overcast", "Cloudy skies all day."
 
     if clouds >= 50:
         return "⛅", "Partly Cloudy", "Some clouds but mostly pleasant."
 
-    # Clear sky
+    # 10.Clear sky
     return "☀️", "Sunny", "Clear skies."
 
 
