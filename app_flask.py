@@ -6,9 +6,7 @@ from datetime import datetime
 
 import os
 
-
-API_KEY = ''
-
+API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
 app = Flask(__name__)
 
