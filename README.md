@@ -12,6 +12,7 @@ https://weather-ai-forecast.onrender.com
 - Dynamic weather UI
 - City geolocation
 - Hybrid ML + rule-based weather engine
+- Forecasting system optimized for Indian weather patterns, with city support through OpenWeather and Open-Meteo APIs.
 
 ## Tech Stack
 Python, Flask, Scikit-Learn, Pandas, OpenWeather API
