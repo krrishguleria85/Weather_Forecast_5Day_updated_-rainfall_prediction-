@@ -155,7 +155,7 @@ button:hover { background: linear-gradient(135deg, #222, #444); transform: trans
 /* add a mobile variant */
 @media (max-width : 768px ){
     .main-title{
-        font-size: 32px;
+        font-size: 38px;
     }
     .city-title{
         font-size: 22px;
@@ -164,6 +164,28 @@ button:hover { background: linear-gradient(135deg, #222, #444); transform: trans
         width: 70%;
     }
     .weather-card{
-        width: 140px;
+        width: 170px;
+        padding: 20px;
+    }
+
+    .search-form{
+        flex-direction: column;
+        align-items: center;
+    }
+    input{
+        width: 85%;
+        max-width: none;
+    }
+    button{
+        width: 85%;
+    }
+
+    .temp{
+        font-size: 48px;
+    }
+
+    .status{
+        font-size: 20px;
     }
 }
+
