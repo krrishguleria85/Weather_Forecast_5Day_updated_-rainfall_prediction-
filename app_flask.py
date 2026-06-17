@@ -51,8 +51,11 @@ def get_weather_type(conf_score, temp_min,temp_max, humidity, clouds, wind_speed
     if 50 <= conf_score < 70 and clouds >= 40:
         
         # Desert override
-        if temp_max >= 33 and humidity < 60:
+        if temp_max >= 38 and humidity < 45:
             return "☀️", "Sunny", "Hot desert conditions."
+        
+        if temp_max >=33:
+            return "☀️", "Sunny", "Warm and sunny weather."
         
         return "🌦️", "Chance of Rain", "Rain possible later in the day."
     
